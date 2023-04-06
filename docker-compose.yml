@@ -100,6 +100,22 @@ services:
       - elasticsearch
     restart: unless-stopped
 
+  filebeat:
+    build:
+      context: filebeat/
+      args:
+        ELASTIC_VERSION: ${ELASTIC_VERSION}
+    volumes:
+      - ./filebeat/mylogs:/usr/share/filebeat/mylogs
+      - ./filebeat/config/filebeat.yml:/usr/share/filebeat/filebeat.yml:ro,Z
+    environment:
+      ELASTIC_PASSWORD: ${ELASTIC_PASSWORD:-}
+    networks:
+      - elk
+    depends_on:
+      - logstash
+    restart: unless-stopped
+
 networks:
   elk:
     driver: bridge
